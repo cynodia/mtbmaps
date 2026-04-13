@@ -1,11 +1,20 @@
 const path = require('path');
+const { execSync } = require('child_process');
 const webpack = require('webpack')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
-const GitRevisionPlugin = require('git-revision-webpack-plugin')
-const gitRevisionPlugin = new GitRevisionPlugin()
-const CreateFileWebpack = require('create-file-webpack')
-const appVersion = gitRevisionPlugin.version() + "/" + gitRevisionPlugin.branch();
+
+function gitInfo() {
+    try {
+        const version = execSync('git describe --always --tags', { encoding: 'utf8' }).trim();
+        const branch = execSync('git rev-parse --abbrev-ref HEAD', { encoding: 'utf8' }).trim();
+        return version + "/" + branch;
+    } catch (e) {
+        return 'unknown';
+    }
+}
+
+const appVersion = gitInfo();
 console.log("Version: " + appVersion);
 
 module.exports = {
@@ -38,28 +47,25 @@ module.exports = {
         publicPath: "/",
     },
     module: {
-     rules: [ {
-         test: /\.css$/,
-         use: [
-           'style-loader',
-           'css-loader',
-         ],
-       }, {
-         test: /\.(png|svg|jpg|gif)$/,
-         use: [
-             'file-loader',
-         ],
-     }, {
-         test: /\.(woff(2)?|ttf|eot|svg)(\?v=\d+\.\d+\.\d+)?$/,
-         use: [
-             {
-                 loader: 'file-loader',
-                 options: {
-                     name: '[name].[ext]',
-                     outputPath: 'fonts/'
-                 }
-             }
-         ]
-     } ]
+        rules: [
+            {
+                test: /\.css$/,
+                use: [
+                    'style-loader',
+                    'css-loader',
+                ],
+            },
+            {
+                test: /\.(png|svg|jpg|gif)$/,
+                type: 'asset/resource',
+            },
+            {
+                test: /\.(woff(2)?|ttf|eot)(\?.*)?$/,
+                type: 'asset/resource',
+                generator: {
+                    filename: 'fonts/[name][ext]'
+                }
+            }
+        ]
     },
 };
