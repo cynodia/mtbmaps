@@ -34,6 +34,7 @@ export default class MtbMapApplication {
         this.satelliteButton = null;
         this.heatmapLayer = null;
         this.heatmapButton = null;
+        this.heatmapActive = false;
         this.userAddedTrails = [];
         this.showingTooltips = false;
         this.tooltipTimer = null;
@@ -142,8 +143,6 @@ export default class MtbMapApplication {
     }
 
     initMap() {
-        console.log("Setting up maps...");
-
         this.lMap = L.map('lmap', {
             zoomControl: false,
             preferCanvas: true,
@@ -158,10 +157,10 @@ export default class MtbMapApplication {
                         }
                 );
         */
-        this.topologyLayer = L.tileLayer('https://opencache.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=topo4&zoom={z}&x={x}&y={y}',
+        this.topologyLayer = L.tileLayer('https://cache.kartverket.no/v1/wmts/1.0.0/topo/default/webmercator/{z}/{y}/{x}.png',
                 {
                     maxNativeZoom: 17,
-                    attribution: '<a href="http://www.kartverket.no/">Kartverket</a>'
+                    attribution: '&copy; <a href="https://www.kartverket.no/">Kartverket</a>'
                 }
         );
 
@@ -202,7 +201,6 @@ export default class MtbMapApplication {
                     clearTimeout(this.tooltipTimer);
                     this.tooltipTimer = null;
                 }
-                console.log("ZOOM: " + this.lMap.getZoom());
                 if (this.lMap.getZoom() > 14) {
                     if (!this.showingTooltips) {
                         this.tooltipTimer = setTimeout(() => {
@@ -248,8 +246,7 @@ export default class MtbMapApplication {
             }
             this.closeContextMenu();
             this.closeTrailMenu();
-            const latlng = this.lMap.mouseEventToLatLng(ev.originalEvent);
-            console.log(latlng.lat + ', ' + latlng.lng);
+            this.lMap.mouseEventToLatLng(ev.originalEvent);
         });
 
         this.trailMap = L.map('trailmap', {
@@ -257,10 +254,10 @@ export default class MtbMapApplication {
             tap: false,
             dragging: !mobile()
         });
-        L.tileLayer('https://opencache.statkart.no/gatekeeper/gk/gk.open_gmaps?layers=topo4&zoom={z}&x={x}&y={y}',
+        L.tileLayer('https://cache.kartverket.no/v1/wmts/1.0.0/topo/default/webmercator/{z}/{y}/{x}.png',
                 {
                     maxNativeZoom: 17,
-                    attribution: '<a href="http://www.kartverket.no/">Kartverket</a>'
+                    attribution: '&copy; <a href="https://www.kartverket.no/">Kartverket</a>'
                 }
         ).addTo(this.trailMap);
 
@@ -340,16 +337,11 @@ export default class MtbMapApplication {
                         if (trailsToLoad === 0) {
                             configsToLoad--;
                             if(configsToLoad === 0) {
-                                console.log("DONE - init UI elems");
-                                this.setUpUI(trailToLoad);
+                                    this.setUpUI(trailToLoad);
                             }
                         }
                     });
                     this.trails.push(t);
-                    //console.log("Added trail " + t.getTitle());
-                    if (trails[i].images.title !== null && trails[i].images.trailStart === null) {
-                        console.log(cfg.title + " Image missing for " + trails[i].title);
-                    }
                     currIdx++;
                 }
             }
@@ -422,9 +414,9 @@ export default class MtbMapApplication {
     }
 
     getClosestTrailStart(lat, lng) {
-        let closestDist = this.trails[0].distanceTo(lat, lng);
-        let closestTrail = this.trails[0];
-        for(let i = 1; i < this.trails.length; i++) {
+        let closestDist = Infinity;
+        let closestTrail = null;
+        for(let i = 0; i < this.trails.length; i++) {
             if(this.trails[i].getLevel() > 0) {
                 const dist = this.trails[i].distanceTo(lat, lng);
                 if (dist < closestDist) {
@@ -442,7 +434,6 @@ export default class MtbMapApplication {
 
     openContextMenu() {
         if(!this.ctxMenuVisible) {
-            console.log("Open ctx");
             this.ctxMenuVisible = true;
             this.ctxMenu.fadeIn();
         }
@@ -450,7 +441,6 @@ export default class MtbMapApplication {
 
     closeContextMenu() {
         if(this.ctxMenuVisible) {
-            console.log("Close ctx");
             this.ctxMenuVisible = false;
             this.ctxMenu.fadeOut();
         }
@@ -458,7 +448,6 @@ export default class MtbMapApplication {
 
     openTrailMenu() {
         if(!this.trailMenuVisible) {
-            console.log("Open trail");
             this.trailMenuVisible = true;
             this.trailMenu.fadeIn();
         }
@@ -466,7 +455,6 @@ export default class MtbMapApplication {
 
     closeTrailMenu() {
         if(this.trailMenuVisible) {
-            console.log("Close ctx");
             this.trailMenuVisible = false;
             this.trailMenu.fadeOut();
         }
@@ -549,30 +537,10 @@ export default class MtbMapApplication {
         ctxBody.append(this.heatmapButton);
 
 
-        this.uploadInput = $('<input type="file" id="fileElem" accept=".gpx" style="display:none"/>');
-        ctxBody.append(this.uploadInput);
-        if(0) {
-            this.uploadButton = $('<div class="ctxEntry"></div>');
-            this.uploadButton.html("<i class=\"ctxEntryIcon fa fa-upload\"></i> Last opp GPX");
-            this.uploadInput.on('change', (event) => {
-                const files = event.target.files;
-                const reader = new FileReader();
-                reader.onload = (evt) => this.parseUserGPX(files[0].name, evt.target.result);
-                reader.readAsText(files[0]);
-            });
-            this.uploadButton.on('click', () => {
-                this.uploadInput.click();
-                return false;
-            });
-            ctxBody.append(this.uploadButton);
-        }
-
         if(!mobile()) {
             this.downloadButton = $('<div class="ctxEntry"></div>');
             this.downloadButton.html('<i class="ctxEntryIcon fa fa-download"></i> Eksporter bilde');
-            this.downloadButton.append(this.downloadLink);
             this.downloadButton.on('click', () => {
-                console.log("IMAGE");
                 $('#exportpopup').html("Genererer bilde...");
                 $('#exportpopup').fadeIn(500);
                 leafletImage(this.lMap, (err, canvas) => {
@@ -677,7 +645,7 @@ export default class MtbMapApplication {
             for (let config in mmConfigurations) {
                 if (mmConfigurations.hasOwnProperty(config)) {
                     const trails = mmConfigurations[config].trails;
-                    if (config === null || config != this.configName) {
+                    if (config !== this.configName) {
                         id += trails.length;
                         continue;
                     }

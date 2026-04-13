@@ -1,2 +1,5 @@
 dist/
 /mtbmaps.min.js
+node_modules/
+.cache/
+.idea/

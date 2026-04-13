@@ -51,7 +51,7 @@ hr {
     */
     min-width: 18.75em;
 }
-#map {
+#lmap {
     width: 100%;
     padding: 0;
     flex: 1;

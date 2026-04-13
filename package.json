@@ -3,10 +3,10 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build-prod": "webpack --config webpack.prod.js",
-    "build-dev": "webpack --config webpack.dev.js",
-    "deploy-prod": "webpack --config webpack.prod.js; bash stage_and_deploy.sh",
-    "serve-dev": "webpack-dev-server --config webpack.dev.js"
+    "build-prod": "NODE_OPTIONS=--openssl-legacy-provider webpack --config webpack.prod.js",
+    "build-dev": "NODE_OPTIONS=--openssl-legacy-provider webpack --config webpack.dev.js",
+    "deploy-prod": "NODE_OPTIONS=--openssl-legacy-provider webpack --config webpack.prod.js; bash stage_and_deploy.sh",
+    "serve-dev": "NODE_OPTIONS=--openssl-legacy-provider webpack-dev-server --config webpack.dev.js"
   },
   "dependencies": {
     "is-mobile": "^2.2.1",

@@ -97,6 +97,7 @@ export default class Trail {
         if(this.levelColors.hasOwnProperty(this.config.level)) {
             return this.levelColors[this.config.level];
         }
+        return 'gray';
     }
 
     getLevelAsText() {
@@ -134,7 +135,7 @@ export default class Trail {
         let lowest = null;
         let highest = null;
         if(typeof xml === 'string') {
-            xml = (new DOMParser()).parseFromString(xml,"text/xml");;
+            xml = (new DOMParser()).parseFromString(xml, "text/xml");
         }
 
         $(xml).find('gpx').each((idx, elem) => {
