@@ -40,6 +40,10 @@ module.exports = {
         new webpack.optimize.LimitChunkCountPlugin({
             maxChunks: 1,
         }),
+        new webpack.ProvidePlugin({
+            $: ['jquery', '$'],
+            jQuery: ['jquery', 'jQuery'],
+        }),
     ],
     output: {
         filename: 'mtbmaps.[name].min.js',
