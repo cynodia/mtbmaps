@@ -11,7 +11,7 @@ npm run serve-dev      # Dev server at http://localhost:8070 with hot reload
 npm run deploy-prod    # Production build + deploy via stage_and_deploy.sh
 ```
 
-The `NODE_OPTIONS=--openssl-legacy-provider` flag is already baked into all scripts to handle the Webpack 4 / Node 17+ OpenSSL incompatibility. No manual workaround needed.
+The build scripts still include `NODE_OPTIONS=--openssl-legacy-provider`; no extra manual Node/OpenSSL workaround is needed when using the project's supported Node version.
 
 There are no tests or linting configured.
 

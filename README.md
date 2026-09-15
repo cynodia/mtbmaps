@@ -11,6 +11,5 @@ to set up YOUR trail-cluster.
 
 ## Development notes
 
-- Installing this project now requires Node 18 or newer.
-- `webpack-dev-server` is intentionally kept on the latest 5.x release because 6.x raises the required Node version even further for local development.
-- The npm `overrides` in `package.json` keep `sockjs -> uuid` on a patched release until that transitive dependency chain is updated upstream.
+- Installing this project now requires Node 22.15.0 or newer.
+- The development server has been updated to `webpack-dev-server` 6.x together with the matching project-wide Node requirement.
