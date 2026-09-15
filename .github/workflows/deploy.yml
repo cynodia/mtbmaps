@@ -42,7 +42,11 @@ jobs:
         run: |
           echo "AWS_REGION=${AWS_REGION:-eu-west-1}" >> "$GITHUB_ENV"
           echo "S3_BUCKET=${S3_BUCKET:-mtbmaps.net}" >> "$GITHUB_ENV"
-          echo "CLOUDFRONT_DISTRIBUTION_IDS=${CLOUDFRONT_DISTRIBUTION_IDS:-E1XAG5EBVMQWWB E32C96K56BB5FT}" >> "$GITHUB_ENV"
+          {
+            echo "CLOUDFRONT_DISTRIBUTION_IDS<<EOF"
+            echo "${CLOUDFRONT_DISTRIBUTION_IDS:-E1XAG5EBVMQWWB E32C96K56BB5FT}"
+            echo "EOF"
+          } >> "$GITHUB_ENV"
           echo "aws-region=${AWS_REGION:-eu-west-1}" >> "$GITHUB_OUTPUT"
 
       - name: Configure AWS credentials
