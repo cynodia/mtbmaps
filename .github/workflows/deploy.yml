@@ -16,9 +16,7 @@ jobs:
     environment: production
     env:
       DIST_DIR: dist
-      S3_BUCKET: ${{ vars.S3_BUCKET || 'mtbmaps.net' }}
       CACHE_CONTROL: max-age=604800
-      CLOUDFRONT_DISTRIBUTION_IDS: ${{ vars.CLOUDFRONT_DISTRIBUTION_IDS || 'E1XAG5EBVMQWWB E32C96K56BB5FT' }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -35,11 +33,23 @@ jobs:
       - name: Build production bundle
         run: npm run build-prod
 
+      - name: Resolve deploy settings
+        id: deploy-settings
+        env:
+          AWS_REGION: ${{ vars.AWS_REGION }}
+          S3_BUCKET: ${{ vars.S3_BUCKET }}
+          CLOUDFRONT_DISTRIBUTION_IDS: ${{ vars.CLOUDFRONT_DISTRIBUTION_IDS }}
+        run: |
+          echo "AWS_REGION=${AWS_REGION:-eu-west-1}" >> "$GITHUB_ENV"
+          echo "S3_BUCKET=${S3_BUCKET:-mtbmaps.net}" >> "$GITHUB_ENV"
+          echo "CLOUDFRONT_DISTRIBUTION_IDS=${CLOUDFRONT_DISTRIBUTION_IDS:-E1XAG5EBVMQWWB E32C96K56BB5FT}" >> "$GITHUB_ENV"
+          echo "aws-region=${AWS_REGION:-eu-west-1}" >> "$GITHUB_OUTPUT"
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
-          aws-region: ${{ vars.AWS_REGION || 'eu-west-1' }}
+          aws-region: ${{ steps.deploy-settings.outputs.aws-region }}
 
       - name: Deploy to S3 and invalidate CloudFront
         run: bash stage_and_deploy.sh
