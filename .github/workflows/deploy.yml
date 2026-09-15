@@ -41,21 +41,18 @@ jobs:
           CLOUDFRONT_DISTRIBUTION_IDS: ${{ vars.CLOUDFRONT_DISTRIBUTION_IDS }}
         run: |
           echo "aws-region=${AWS_REGION:-eu-west-1}" >> "$GITHUB_OUTPUT"
-          if [ -n "${S3_BUCKET:-}" ]; then
-            echo "S3_BUCKET=${S3_BUCKET}" >> "$GITHUB_ENV"
-          fi
-          if [ -n "${CLOUDFRONT_DISTRIBUTION_IDS:-}" ]; then
-            {
-              echo "CLOUDFRONT_DISTRIBUTION_IDS<<EOF"
-              echo "${CLOUDFRONT_DISTRIBUTION_IDS}"
-              echo "EOF"
-            } >> "$GITHUB_ENV"
-          fi
+          echo "S3_BUCKET=${S3_BUCKET:-mtbmaps.net}" >> "$GITHUB_ENV"
+          {
+            echo "CLOUDFRONT_DISTRIBUTION_IDS<<EOF"
+            echo "${CLOUDFRONT_DISTRIBUTION_IDS:-E1XAG5EBVMQWWB E32C96K56BB5FT}"
+            echo "EOF"
+          } >> "$GITHUB_ENV"
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ steps.deploy-settings.outputs.aws-region }}
 
       - name: Deploy to S3 and invalidate CloudFront
