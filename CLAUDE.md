@@ -11,7 +11,7 @@ npm run serve-dev      # Dev server at http://localhost:8070 with hot reload
 npm run deploy-prod    # Production build + deploy via stage_and_deploy.sh
 ```
 
-The build scripts still include `NODE_OPTIONS=--openssl-legacy-provider`; no extra manual Node/OpenSSL workaround is needed when using the project's supported Node version.
+The current Webpack 5 toolchain works on the project's supported Node versions without any extra manual OpenSSL workaround.
 
 There are no tests or linting configured.
 
