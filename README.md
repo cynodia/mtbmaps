@@ -18,5 +18,5 @@ to set up YOUR trail-cluster.
 ## Deployment
 
 - Pushes to `master` run the GitHub Actions workflow in `.github/workflows/deploy.yml`.
-- Add a GitHub secret `AWS_ROLE_TO_ASSUME` for an IAM role that GitHub Actions can assume with OIDC.
+- Add an environment secret named `AWS_ROLE_TO_ASSUME` to a protected `production` environment for an IAM role that GitHub Actions can assume with OIDC.
 - Optional repository variables `AWS_REGION`, `S3_BUCKET`, and `CLOUDFRONT_DISTRIBUTION_IDS` can override the current production defaults.

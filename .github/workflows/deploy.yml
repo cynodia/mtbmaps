@@ -13,6 +13,7 @@ permissions:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: production
     env:
       DIST_DIR: dist
       S3_BUCKET: ${{ vars.S3_BUCKET || 'mtbmaps.net' }}
