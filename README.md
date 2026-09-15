@@ -11,5 +11,6 @@ to set up YOUR trail-cluster.
 
 ## Development notes
 
-- The refreshed toolchain is verified with Node 22.15.0+; some transitive development dependencies currently publish narrower support windows for odd-numbered Node majors.
+- `package.json` now declares a minimum Node version of 22.15.0 for installs with the refreshed toolchain.
+- Some transitive development dependencies currently publish narrower support windows for odd-numbered Node majors, so Node 22 remains the primary verified path.
 - The development server has been updated to `webpack-dev-server` 6.x together with the matching project-wide Node requirement.
