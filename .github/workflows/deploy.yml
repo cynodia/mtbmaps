@@ -17,7 +17,6 @@ jobs:
     env:
       DIST_DIR: dist
       CACHE_CONTROL: max-age=604800
-      AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -50,10 +49,16 @@ jobs:
           } >> "$GITHUB_ENV"
           echo "aws-region=${AWS_REGION:-eu-west-1}" >> "$GITHUB_OUTPUT"
 
+      - name: Resolve deploy role
+        id: deploy-role
+        env:
+          AWS_ROLE_TO_ASSUME: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+        run: echo "role-to-assume=${AWS_ROLE_TO_ASSUME}" >> "$GITHUB_OUTPUT"
+
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ env.AWS_ROLE_TO_ASSUME }}
+          role-to-assume: ${{ steps.deploy-role.outputs.role-to-assume }}
           aws-region: ${{ steps.deploy-settings.outputs.aws-region }}
 
       - name: Deploy to S3 and invalidate CloudFront
