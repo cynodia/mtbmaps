@@ -7,4 +7,10 @@ while you are in the midst of a confusing maze of trails, and it will lead you t
 onfo on all surrounding trails.
 From a technical perspective the idea is to have a static web-app with no dynamic server-side technology 
 requirements. All you should need to do is to add the GPX tracks, add images and fill out some JSON structures
-to set up YOUR trail-custer.
+to set up YOUR trail-cluster.
+
+## Development notes
+
+- Node `>=22.15.0 <23` is now required to install dependencies and to build or serve the project locally with the refreshed toolchain.
+- Other Node majors are currently unverified for local development with the refreshed dependency stack.
+- The development server has been updated to `webpack-dev-server` 6.x together with the matching project-wide Node requirement.
