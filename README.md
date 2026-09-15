@@ -11,5 +11,6 @@ to set up YOUR trail-cluster.
 
 ## Development notes
 
-- `webpack-dev-server` is intentionally kept on the latest 5.x release because 6.x raises the required Node version for local development.
-- The npm `overrides` in `package.json` keep `sockjs -> uuid` on a patched release and pin the transitive `browserslist -> node-releases` package to a Node 17-compatible version for the current webpack toolchain.
+- Local development now requires Node 18 or newer.
+- `webpack-dev-server` is intentionally kept on the latest 5.x release because 6.x raises the required Node version even further for local development.
+- The npm `overrides` in `package.json` keep `sockjs -> uuid` on a patched release until that transitive dependency chain is updated upstream.
