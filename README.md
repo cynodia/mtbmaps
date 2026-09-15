@@ -11,5 +11,5 @@ to set up YOUR trail-cluster.
 
 ## Development notes
 
-- Installing this project now requires Node 22.15.0 or newer.
+- Installing this project now requires Node `^22.15.0 || ^24.0.0 || >=26.0.0`.
 - The development server has been updated to `webpack-dev-server` 6.x together with the matching project-wide Node requirement.
