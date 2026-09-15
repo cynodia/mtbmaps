@@ -8,3 +8,8 @@ onfo on all surrounding trails.
 From a technical perspective the idea is to have a static web-app with no dynamic server-side technology 
 requirements. All you should need to do is to add the GPX tracks, add images and fill out some JSON structures
 to set up YOUR trail-custer.
+
+## Development notes
+
+- `webpack-dev-server` is intentionally kept on the latest 5.x release because 6.x raises the required Node version for local development.
+- The npm `overrides` in `package.json` keep `sockjs -> uuid` on a patched release and pin `node-releases` to a Node 17-compatible version for the current webpack toolchain.
