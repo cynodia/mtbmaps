@@ -40,14 +40,17 @@ jobs:
           S3_BUCKET: ${{ vars.S3_BUCKET }}
           CLOUDFRONT_DISTRIBUTION_IDS: ${{ vars.CLOUDFRONT_DISTRIBUTION_IDS }}
         run: |
-          echo "AWS_REGION=${AWS_REGION:-eu-west-1}" >> "$GITHUB_ENV"
-          echo "S3_BUCKET=${S3_BUCKET:-mtbmaps.net}" >> "$GITHUB_ENV"
-          {
-            echo "CLOUDFRONT_DISTRIBUTION_IDS<<EOF"
-            echo "${CLOUDFRONT_DISTRIBUTION_IDS:-E1XAG5EBVMQWWB E32C96K56BB5FT}"
-            echo "EOF"
-          } >> "$GITHUB_ENV"
           echo "aws-region=${AWS_REGION:-eu-west-1}" >> "$GITHUB_OUTPUT"
+          if [ -n "${S3_BUCKET:-}" ]; then
+            echo "S3_BUCKET=${S3_BUCKET}" >> "$GITHUB_ENV"
+          fi
+          if [ -n "${CLOUDFRONT_DISTRIBUTION_IDS:-}" ]; then
+            {
+              echo "CLOUDFRONT_DISTRIBUTION_IDS<<EOF"
+              echo "${CLOUDFRONT_DISTRIBUTION_IDS}"
+              echo "EOF"
+            } >> "$GITHUB_ENV"
+          fi
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
