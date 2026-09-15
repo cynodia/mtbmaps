@@ -1,0 +1,62 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      DIST_DIR: dist
+      CACHE_CONTROL: max-age=604800
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.15.0
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build production bundle
+        run: npm run build-prod
+
+      - name: Resolve deploy settings
+        id: deploy-settings
+        env:
+          AWS_REGION: ${{ vars.AWS_REGION }}
+          S3_BUCKET: ${{ vars.S3_BUCKET }}
+          CLOUDFRONT_DISTRIBUTION_IDS: ${{ vars.CLOUDFRONT_DISTRIBUTION_IDS }}
+        run: |
+          echo "aws-region=${AWS_REGION:-eu-west-1}" >> "$GITHUB_OUTPUT"
+          if [ -n "${S3_BUCKET:-}" ]; then
+            echo "S3_BUCKET=${S3_BUCKET}" >> "$GITHUB_ENV"
+          fi
+          if [ -n "${CLOUDFRONT_DISTRIBUTION_IDS:-}" ]; then
+            {
+              echo "CLOUDFRONT_DISTRIBUTION_IDS<<EOF"
+              echo "${CLOUDFRONT_DISTRIBUTION_IDS}"
+              echo "EOF"
+            } >> "$GITHUB_ENV"
+          fi
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ${{ steps.deploy-settings.outputs.aws-region }}
+
+      - name: Deploy to S3 and invalidate CloudFront
+        run: bash stage_and_deploy.sh

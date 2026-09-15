@@ -14,3 +14,10 @@ to set up YOUR trail-cluster.
 - Node `>=22.15.0 <23` is now required to install dependencies and to build or serve the project locally with the refreshed toolchain.
 - Other Node majors are currently unverified for local development with the refreshed dependency stack.
 - The development server has been updated to `webpack-dev-server` 6.x together with the matching project-wide Node requirement.
+
+## Deployment
+
+- Pushes to `master` run the GitHub Actions workflow in `.github/workflows/deploy.yml`.
+- Add an environment secret named `AWS_ROLE_TO_ASSUME` to the protected `production` environment for an IAM role that GitHub Actions can assume with OIDC.
+- No long-lived AWS access key secret is required when the role trust policy allows GitHub OIDC for this repository.
+- Optional repository variables `AWS_REGION`, `S3_BUCKET`, and `CLOUDFRONT_DISTRIBUTION_IDS` can override the current production defaults.
