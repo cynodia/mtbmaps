@@ -10,16 +10,13 @@ gtag('js', new Date());
 gtag('config', 'UA-135266495-1');
 
 function getUrlParameter(sParam) {
-    const sPageURL = window.location.search.substring(1);
-    let sURLVariables = sPageURL.split('&');
-
-    for (let i = 0; i < sURLVariables.length; i++) {
-        const sParameterName = sURLVariables[i].split('=');
-
-        if (sParameterName[0] === sParam) {
-            return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
-        }
+    const params = new URLSearchParams(window.location.search);
+    if (!params.has(sParam)) {
+        return undefined;
     }
+
+    const value = params.get(sParam);
+    return value === '' ? true : value;
 }
 
 $( function() {
@@ -37,7 +34,7 @@ $( function() {
         let config = null;
 
         let urlParam = getUrlParameter("c");
-        if(urlParam && mmConfigurations.hasOwnProperty(urlParam)) {
+        if(urlParam && mmConfigurations[urlParam]) {
             config = urlParam;
         }
 

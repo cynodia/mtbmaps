@@ -1,4 +1,5 @@
 import mobile from 'is-mobile';
+import {calcCrow, createMarkerIcon, parseGpxData, replaceLinks} from './MapDataUtils';
 
 export default class Trail {
     constructor(config, levelColors, id, infoWindow) {
@@ -22,18 +23,8 @@ export default class Trail {
         this.infoTimeout = null;
         //this.config.title = this.config.url;
 
-        if(config.findStartText) { config.findStartText = this.replaceLinks(config.findStartText); }
-        if(config.infoText) { config.infoText = this.replaceLinks(config.infoText); }
-    }
-
-    replaceLinks(str) {
-        const replacePattern = /\[(.*?)\]/gim;
-        try {
-            return str.replace(replacePattern, '<a href=\'#\' onclick=\'openTrailByName("$1")\'>$1</a>');
-        } catch(e) {
-            console.error(e);
-            return str;
-        }
+        if(config.findStartText) { config.findStartText = replaceLinks(config.findStartText); }
+        if(config.infoText) { config.infoText = replaceLinks(config.infoText); }
     }
 
     isBidirectional() {
@@ -94,7 +85,7 @@ export default class Trail {
         if(window.printRender) {
             return 'black';
         }
-        if(this.levelColors.hasOwnProperty(this.config.level)) {
+        if(this.levelColors[this.config.level]) {
             return this.levelColors[this.config.level];
         }
         return 'gray';
@@ -115,66 +106,8 @@ export default class Trail {
         return this.bounds;
     }
 
-    //This function takes in latitude and longitude of two location and returns the distance between them as the crow flies (in km)
-    calcCrow(lat1, lon1, lat2, lon2) {
-        function toRad(v) { return (v * Math.PI / 180); }
-
-        const R = 6371; // km
-        const dLat = toRad(lat2-lat1);
-        const dLon = toRad(lon2-lon1);
-        lat1 = toRad(lat1);
-        lat2 = toRad(lat2);
-
-        const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                Math.sin(dLon/2) * Math.sin(dLon/2) * Math.cos(lat1) * Math.cos(lat2);
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        return ((R * c) * 1000);
-    }
-
     parseGpx(xml) {
-        let lowest = null;
-        let highest = null;
-        if(typeof xml === 'string') {
-            xml = (new DOMParser()).parseFromString(xml, "text/xml");
-        }
-
-        $(xml).find('gpx').each((idx, elem) => {
-            $(elem).find('trk').each((idx, elem) => {
-                let lastLat = null;
-                let lastLng = null;
-                $(elem).find('trkseg').each((idx, elem) => {
-                    $(elem).find('trkpt').each((idx, elem) => {
-                        const lat = parseFloat($(elem).attr('lat'));
-                        const lng = parseFloat($(elem).attr('lon'));
-                        this.coordinates.push(
-                                {
-                                    lat: lat,
-                                    lng: lng
-                                }
-                        );
-                        const dist = lastLat === null ? 0 : this.calcCrow(lastLat, lastLng, lat, lng);
-                        this.distances.push(dist);
-                        this.length += (Math.floor(dist) / 1000);
-                        this.bounds.extend(L.latLng(lat, lng));
-                        lastLat = lat;
-                        lastLng = lng;
-                        let alt = 0.0;
-                        $(elem).find('ele').each(function (idx, elem) {
-                            alt = parseFloat($(elem).text());
-                            if (lowest === null) {
-                                lowest = highest = alt;
-                            } else if (lowest > alt) {
-                                lowest = alt;
-                            } else if (highest < alt) {
-                                highest = alt;
-                            }
-                        });
-                        this.altitudes.push(alt);
-                    });
-                });
-            });
-        });
-        this.heightDiff = highest - lowest;
+        Object.assign(this, parseGpxData(xml));
     }
 
     loadTrail() {
@@ -198,11 +131,11 @@ export default class Trail {
 
     distanceTo(lat, lng) {
         if(this.config.bidirectional) {
-            const toStart = this.calcCrow(lat, lng, this.coordinates[0].lat, this.coordinates[0].lng);
-            const toEnd = this.calcCrow(lat, lng, this.coordinates[this.coordinates.length - 1].lat, this.coordinates[this.coordinates.length - 1].lng)
+            const toStart = calcCrow(lat, lng, this.coordinates[0].lat, this.coordinates[0].lng);
+            const toEnd = calcCrow(lat, lng, this.coordinates[this.coordinates.length - 1].lat, this.coordinates[this.coordinates.length - 1].lng)
             return Math.min(toStart, toEnd);
         } else {
-            return this.calcCrow(lat, lng, this.coordinates[0].lat, this.coordinates[0].lng);
+            return calcCrow(lat, lng, this.coordinates[0].lat, this.coordinates[0].lng);
         }
     }
 
@@ -246,11 +179,7 @@ export default class Trail {
         if(!window.printRender && this.config.bidirectional === false) {
             if (!this.startMarker) {
                 this.startMarker = L.marker(this.coordinates[0], {
-                    icon: L.icon({
-                        iconUrl: 'data/imgs/marker_start2.png',
-                        iconSize: [20, 20],
-                        iconAnchor: [10, 10]
-                    })
+                    icon: createMarkerIcon('data/imgs/marker_start2.png', [20, 20], [10, 10])
                 });
                 this.startMarker.on('click', this.pathClicked.bind(this));
                 this.startMarker.bindTooltip("Start: " + this.getTitle(),
