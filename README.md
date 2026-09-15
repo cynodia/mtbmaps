@@ -11,5 +11,5 @@ to set up YOUR trail-cluster.
 
 ## Development notes
 
-- Installing this project now requires Node `^22.15.0 || ^24.0.0 || >=26.0.0`; the current toolchain does not support odd-numbered majors such as Node 23 or 25.
+- The refreshed toolchain is verified with Node 22.15.0+; some transitive development dependencies currently publish narrower support windows for odd-numbered Node majors.
 - The development server has been updated to `webpack-dev-server` 6.x together with the matching project-wide Node requirement.
