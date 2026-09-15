@@ -11,6 +11,6 @@ to set up YOUR trail-cluster.
 
 ## Development notes
 
-- Node 22.15.0+ is now required to install dependencies and to build or serve the project locally with the refreshed toolchain.
-- Some transitive development dependencies currently publish narrower support windows for odd-numbered Node majors, so Node 22 remains the primary verified build/development path.
+- Node 22.15.0 or newer within the Node 22 release line is now required to install dependencies and to build or serve the project locally with the refreshed toolchain.
+- Other Node majors are currently unverified for local development with the refreshed dependency stack.
 - The development server has been updated to `webpack-dev-server` 6.x together with the matching project-wide Node requirement.
