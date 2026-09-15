@@ -7,7 +7,7 @@ while you are in the midst of a confusing maze of trails, and it will lead you t
 onfo on all surrounding trails.
 From a technical perspective the idea is to have a static web-app with no dynamic server-side technology 
 requirements. All you should need to do is to add the GPX tracks, add images and fill out some JSON structures
-to set up YOUR trail-custer.
+to set up YOUR trail-cluster.
 
 ## Development notes
 
