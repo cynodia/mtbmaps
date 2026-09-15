@@ -14,3 +14,9 @@ to set up YOUR trail-cluster.
 - Node `>=22.15.0 <23` is now required to install dependencies and to build or serve the project locally with the refreshed toolchain.
 - Other Node majors are currently unverified for local development with the refreshed dependency stack.
 - The development server has been updated to `webpack-dev-server` 6.x together with the matching project-wide Node requirement.
+
+## Deployment
+
+- Pushes to `master` run the GitHub Actions workflow in `/home/runner/work/mtbmaps/mtbmaps/.github/workflows/deploy.yml`.
+- Add GitHub secrets `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` so the workflow can deploy.
+- Optional repository variables `AWS_REGION`, `S3_BUCKET`, and `CLOUDFRONT_DISTRIBUTION_IDS` can override the current production defaults.
