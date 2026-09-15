@@ -12,4 +12,4 @@ to set up YOUR trail-custer.
 ## Development notes
 
 - `webpack-dev-server` is intentionally kept on the latest 5.x release because 6.x raises the required Node version for local development.
-- The npm `overrides` in `package.json` keep `sockjs -> uuid` on a patched release and pin `node-releases` to a Node 17-compatible version for the current webpack toolchain.
+- The npm `overrides` in `package.json` keep `sockjs -> uuid` on a patched release and pin the transitive `browserslist -> node-releases` package to a Node 17-compatible version for the current webpack toolchain.
