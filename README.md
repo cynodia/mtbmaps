@@ -17,6 +17,6 @@ to set up YOUR trail-cluster.
 
 ## Deployment
 
-- Pushes to `master` run the GitHub Actions workflow in `/home/runner/work/mtbmaps/mtbmaps/.github/workflows/deploy.yml`.
+- Pushes to `master` run the GitHub Actions workflow in `.github/workflows/deploy.yml`.
 - Add GitHub secrets `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` so the workflow can deploy.
 - Optional repository variables `AWS_REGION`, `S3_BUCKET`, and `CLOUDFRONT_DISTRIBUTION_IDS` can override the current production defaults.
