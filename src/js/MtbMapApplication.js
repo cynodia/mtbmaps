@@ -5,6 +5,7 @@ import mmConfigurations from "./Config";
 import L from 'leaflet';
 import leafletImage from "leaflet-image";
 import mobile from 'is-mobile';
+import {createMarkerIcon} from './MapDataUtils';
 
 export default class MtbMapApplication {
 
@@ -280,11 +281,7 @@ export default class MtbMapApplication {
                 for (let key in cfg.markers) {
                     if (cfg.markers.hasOwnProperty(key)) {
                         const marker = L.marker(cfg.markers[key].position, {
-                            icon: L.icon({
-                                iconUrl: cfg.markers[key].icon,
-                                iconSize: [30, 30],
-                                iconAnchor: [15, 30]
-                            })
+                            icon: createMarkerIcon(cfg.markers[key].icon, [30, 30], [15, 30])
                         });
                         /** Add them to the path layer */
                         marker.addTo(this.trackLayer);
@@ -301,11 +298,7 @@ export default class MtbMapApplication {
 
                 /** Add titles */
                 const titleMarker = new L.marker([cfg.main.center.lat, cfg.main.center.lng], {
-                    icon: L.icon({
-                        iconUrl: 'data/imgs/marker_star.png',
-                        iconSize: [30, 30],
-                        iconAnchor: [15, 30]
-                    })
+                    icon: createMarkerIcon('data/imgs/marker_star.png', [30, 30], [15, 30])
                 });
                 titleMarker.bindTooltip(cfg.title + '<br>' + trails.length + ' stier', {
                     permanent: true,

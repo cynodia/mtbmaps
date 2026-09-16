@@ -1,3 +1,5 @@
+import {createMarkerIcon} from './MapDataUtils';
+
 export default class GeoLocator {
     
     constructor(app) {
@@ -40,30 +42,31 @@ export default class GeoLocator {
         }
     }
 
-    updatePosition(pos) {
-        this.lastData = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+    showClosestTrailInfo(latitude, longitude, message) {
+        const closestTrail = this.app.getClosestTrailStart(latitude, longitude);
+        this.app.setClosestTrail(closestTrail);
+        const nearestName = closestTrail ? closestTrail.getTitle() : "ukjent";
 
-        if(this.mainLocationMarker) {
+        this.app.showInfo(message + "<hr>Nærmeste sti: <b>" + nearestName + "</b><br>Klikk her for å åpne.", 6);
+    }
+
+    updatePosition(pos) {
+        const {latitude, longitude} = pos.coords;
+        const hadMarker = Boolean(this.mainLocationMarker);
+        const showNearestTrail = !hadMarker || this.geoId === null;
+        this.lastData = {lat: latitude, lng: longitude};
+
+        if(hadMarker) {
             this.mainLocationMarker.setLatLng(this.lastData);
-            if(this.geoId === null) {
-                const closestTrail = this.app.getClosestTrailStart(pos.coords.latitude, pos.coords.longitude);
-                this.app.setClosestTrail(closestTrail);
-                const nearestName = closestTrail ? closestTrail.getTitle() : "ukjent";
-                this.app.showInfo("Posisjon oppdatert<hr>Nærmeste sti: <b>" + nearestName + "</b><br>Klikk her for å åpne.", 6);
-            }
         } else {
-            const closestTrail = this.app.getClosestTrailStart(pos.coords.latitude, pos.coords.longitude);
-            this.app.setClosestTrail(closestTrail);
-            const nearestName = closestTrail ? closestTrail.getTitle() : "ukjent";
-            this.app.showInfo("Posisjon funnet<hr>Nærmeste sti: <b>" + nearestName + "</b><br>Klikk her for å åpne.", 6);
             this.mainLocationMarker = L.marker(this.lastData, {
-                icon: L.icon({
-                    iconUrl: 'data/imgs/marker_you.png',
-                    iconSize: [40, 40],
-                    iconAnchor: [20, 40]
-                })
+                icon: createMarkerIcon('data/imgs/marker_you.png', [40, 40], [20, 40])
             });
             this.mainLocationMarker.addTo(this.app.getMainMap());
+        }
+
+        if (showNearestTrail) {
+            this.showClosestTrailInfo(latitude, longitude, hadMarker ? "Posisjon oppdatert" : "Posisjon funnet");
         }
 
         this.app.getMainMap().flyTo(this.lastData);
